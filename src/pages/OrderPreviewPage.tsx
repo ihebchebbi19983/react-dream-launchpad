@@ -9,11 +9,14 @@ import DeliveryDetails from '@/components/order/DeliveryDetails';
 import OrderItems from '@/components/order/OrderItems';
 import OrderSummary from '@/components/order/OrderSummary';
 import { HoldToConfirmButton } from '@/components/order/HoldToConfirmButton';
+import { useCart } from '@/components/cart/CartProvider';
 
 const OrderPreviewPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { hasNewsletterDiscount, calculateTotal } = useCart();
+  const { subtotal, discount: newsletterDiscount, total } = calculateTotal();
 
   const handleConfirmOrder = () => {
     toast({
@@ -33,7 +36,7 @@ const OrderPreviewPage = () => {
     return null;
   }
 
-  const { items, userDetails, total, shipping, finalTotal } = state.orderDetails;
+  const { items, userDetails, shipping, finalTotal } = state.orderDetails;
 
   return (
     <div className="min-h-screen bg-[#F1F0FB]">
@@ -59,9 +62,11 @@ const OrderPreviewPage = () => {
           <DeliveryDetails userDetails={userDetails} />
           <OrderItems items={items} />
           <OrderSummary 
-            total={total}
+            subtotal={subtotal}
             shipping={shipping}
             finalTotal={finalTotal}
+            hasNewsletterDiscount={hasNewsletterDiscount}
+            newsletterDiscount={newsletterDiscount}
           />
 
           <HoldToConfirmButton onConfirm={handleConfirmOrder} />
