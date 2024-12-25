@@ -1,3 +1,9 @@
+interface CartItem {
+  id: number;
+  size?: string;
+  quantity: number;
+}
+
 interface StockUpdatePayload {
   id_product: number;
   xs_size?: number;
@@ -8,7 +14,7 @@ interface StockUpdatePayload {
   xxl_size?: number;
 }
 
-export const updateProductStock = async (cartItems: any[]) => {
+export const updateProductStock = async (cartItems: CartItem[]) => {
   console.log('Starting stock update for items:', cartItems);
   
   try {
@@ -40,7 +46,7 @@ export const updateProductStock = async (cartItems: any[]) => {
     console.log('Prepared stock updates:', stockUpdates);
 
     // Send updates for each product
-    const updatePromises = Object.values(stockUpdates).map(async (update) => {
+    const updatePromises = Object.values(stockUpdates).map(async (update: StockUpdatePayload) => {
       console.log(`Sending stock update for product ${update.id_product}:`, update);
       
       const response = await fetch('https://respizenmedical.com/fiori/recount_product.php', {
