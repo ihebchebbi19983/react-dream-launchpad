@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CreditCard } from 'lucide-react';
+import { updateProductStock } from '@/utils/stockManagement';
+import { useLocation } from 'react-router-dom';
+import { toast } from "@/components/ui/use-toast";
 
 interface HoldToConfirmButtonProps {
   onConfirm: () => void;
@@ -11,6 +14,28 @@ export const HoldToConfirmButton = ({ onConfirm }: HoldToConfirmButtonProps) => 
   const [progress, setProgress] = useState(0);
   const holdDuration = 3000; // 3 seconds
   const intervalDuration = 100; // Update every 100ms
+  const location = useLocation();
+
+  const handleConfirmation = async () => {
+    const { orderDetails } = location.state || {};
+    
+    if (orderDetails?.items) {
+      try {
+        console.log('Updating stock for cash payment:', orderDetails.items);
+        await updateProductStock(orderDetails.items);
+        onConfirm();
+      } catch (error) {
+        console.error('Error updating stock:', error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la mise à jour du stock",
+          variant: "destructive",
+        });
+      }
+    } else {
+      onConfirm();
+    }
+  };
 
   const startHolding = () => {
     setIsHolding(true);
@@ -21,7 +46,7 @@ export const HoldToConfirmButton = ({ onConfirm }: HoldToConfirmButtonProps) => 
         clearInterval(interval);
         setIsHolding(false);
         setProgress(0);
-        onConfirm();
+        handleConfirmation();
       } else {
         setProgress(currentProgress);
       }

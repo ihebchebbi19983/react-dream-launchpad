@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import { useCart } from '@/components/cart/CartProvider';
 import { useToast } from "@/hooks/use-toast";
+import { updateProductStock } from '@/utils/stockManagement';
 
 const PaymentSuccessPage = () => {
   const navigate = useNavigate();
@@ -11,13 +12,39 @@ const PaymentSuccessPage = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Clear the cart and show success message
-    clearCart();
-    toast({
-      title: "Paiement réussi!",
-      description: "Votre commande a été confirmée et sera traitée dans les plus brefs délais.",
-      variant: "default",
-    });
+    const handlePaymentSuccess = async () => {
+      try {
+        // Get pending order from sessionStorage
+        const pendingOrderString = sessionStorage.getItem('pendingOrder');
+        if (pendingOrderString) {
+          const pendingOrder = JSON.parse(pendingOrderString);
+          console.log('Processing pending order:', pendingOrder);
+          
+          // Update stock
+          await updateProductStock(pendingOrder.cartItems);
+          
+          // Clear pending order
+          sessionStorage.removeItem('pendingOrder');
+        }
+
+        // Clear the cart and show success message
+        clearCart();
+        toast({
+          title: "Paiement réussi!",
+          description: "Votre commande a été confirmée et sera traitée dans les plus brefs délais.",
+          variant: "default",
+        });
+      } catch (error) {
+        console.error('Error processing payment success:', error);
+        toast({
+          title: "Attention",
+          description: "Commande confirmée mais une erreur est survenue lors de la mise à jour du stock.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    handlePaymentSuccess();
   }, [clearCart, toast]);
 
   return (

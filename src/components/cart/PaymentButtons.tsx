@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from "@/components/ui/use-toast";
 import { initKonnectPayment } from '@/services/konnectApi';
 import PaymentLoadingScreen from '../payment/PaymentLoadingScreen';
+import { updateProductStock } from '@/utils/stockManagement';
 
 interface PaymentButtonsProps {
   enabled: boolean;
@@ -50,6 +51,12 @@ const PaymentButtons = ({
         email: userDetails.email,
         orderId,
       });
+
+      // Store cart items in sessionStorage for stock update after payment
+      sessionStorage.setItem('pendingOrder', JSON.stringify({
+        cartItems,
+        orderId
+      }));
 
       window.location.href = response.payUrl;
     } catch (error) {
