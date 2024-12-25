@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Link } from 'react-router-dom';
 import { useCart } from './CartProvider';
-import { CartItem } from './CartProvider';
 
 const promoCodes = {
   'WELCOME10': { discount: 10, description: 'Code de bienvenue' },
@@ -19,12 +18,9 @@ const promoCodes = {
 
 interface OrderSummaryProps {
   userDetails: UserDetails | null;
-  cartItems: CartItem[];
+  cartItems: any[];
   onEditDetails?: () => void;
   onDeleteDetails?: () => void;
-  total?: number;
-  shipping?: number;
-  finalTotal?: number;
 }
 
 const OrderSummary = ({ 

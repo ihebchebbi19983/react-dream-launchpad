@@ -22,21 +22,7 @@ export const HoldToConfirmButton = ({ onConfirm }: HoldToConfirmButtonProps) => 
     if (orderDetails?.items) {
       try {
         console.log('Updating stock for cash payment:', orderDetails.items);
-        const stockUpdateResults = await updateProductStock(orderDetails.items);
-        console.log('Stock update results:', stockUpdateResults);
-        
-        // Verify all updates were successful
-        const allSuccessful = stockUpdateResults.every(result => result.status === 'success');
-        
-        if (!allSuccessful) {
-          console.warn('Some stock updates failed:', stockUpdateResults);
-          toast({
-            title: "Attention",
-            description: "La commande est confirmée mais certaines mises à jour de stock ont échoué.",
-            variant: "destructive",
-          });
-        }
-        
+        await updateProductStock(orderDetails.items);
         onConfirm();
       } catch (error) {
         console.error('Error updating stock:', error);

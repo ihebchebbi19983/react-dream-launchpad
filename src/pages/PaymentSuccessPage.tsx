@@ -21,20 +21,7 @@ const PaymentSuccessPage = () => {
           console.log('Processing pending order:', pendingOrder);
           
           // Update stock
-          const stockUpdateResults = await updateProductStock(pendingOrder.cartItems);
-          console.log('Stock update results:', stockUpdateResults);
-          
-          // Verify all updates were successful
-          const allSuccessful = stockUpdateResults.every(result => result.status === 'success');
-          
-          if (!allSuccessful) {
-            console.warn('Some stock updates failed:', stockUpdateResults);
-            toast({
-              title: "Attention",
-              description: "La commande est confirmée mais certaines mises à jour de stock ont échoué.",
-              variant: "destructive",
-            });
-          }
+          await updateProductStock(pendingOrder.cartItems);
           
           // Clear pending order
           sessionStorage.removeItem('pendingOrder');
